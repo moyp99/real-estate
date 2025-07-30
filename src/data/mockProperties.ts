@@ -37,7 +37,7 @@ export const mockProperties: Property[] = [
     agent: {
       name: "Sarah Martinez",
       phone: "(619) 555-0123",
-      email: "sarah.martinez@realty.com",
+      email: "agent@realestate.com",
       photo: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100",
       company: "Pacific Coast Realty"
     },
@@ -87,7 +87,7 @@ export const mockProperties: Property[] = [
     agent: {
       name: "Michael Chen",
       phone: "(619) 555-0456",
-      email: "michael.chen@urbanrealty.com",
+      email: "john.agent@estate.com",
       photo: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100",
       company: "Urban Realty Group"
     },

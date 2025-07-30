@@ -9,7 +9,13 @@ const SignupPage: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    userType: 'user' as 'user' | 'agent'
+    userType: 'user' as 'user' | 'agent',
+    // Agent-specific fields
+    licenseNumber: '',
+    brokerageName: '',
+    phone: '',
+    yearsOfExperience: '',
+    specialization: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
@@ -20,7 +26,11 @@ const SignupPage: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/main')
+      if (user.type === 'agent') {
+        navigate('/agent-dashboard')
+      } else {
+        navigate('/main')
+      }
     }
   }, [user, navigate])
 
@@ -31,6 +41,21 @@ const SignupPage: React.FC = () => {
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields')
       return
+    }
+    
+    // Additional validation for agents
+    if (formData.userType === 'agent') {
+      if (!formData.licenseNumber || !formData.brokerageName || !formData.phone) {
+        setError('Please fill in all required agent information')
+        return
+      }
+      
+      // Basic phone validation
+      const phoneRegex = /^[\d\s()+-]+$/
+      if (!phoneRegex.test(formData.phone)) {
+        setError('Please enter a valid phone number')
+        return
+      }
     }
     
     if (formData.password !== formData.confirmPassword) {
@@ -45,7 +70,11 @@ const SignupPage: React.FC = () => {
     
     const success = await signup(formData.email, formData.password, formData.name, formData.userType)
     if (success) {
-      navigate('/main')
+      if (formData.userType === 'agent') {
+        navigate('/agent-dashboard')
+      } else {
+        navigate('/main')
+      }
     }
   }
 
@@ -95,27 +124,33 @@ const SignupPage: React.FC = () => {
 
           {/* User Type Selection */}
           <div className="mb-6">
-            <div className="flex space-x-2">
+            <div className="flex gap-4">
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, userType: 'user' }))}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
                   formData.userType === 'user'
-                    ? 'bg-primary-800 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-600/25'
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
+                <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
                 Home Buyer
               </button>
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, userType: 'agent' }))}
-                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
                   formData.userType === 'agent'
-                    ? 'bg-primary-800 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-600/25'
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
+                <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
                 Real Estate Agent
               </button>
             </div>
@@ -199,6 +234,101 @@ const SignupPage: React.FC = () => {
                 className="input-field"
               />
             </div>
+
+            {/* Agent-specific fields */}
+            {formData.userType === 'agent' && (
+              <>
+                <div className="space-y-4 mt-6 pt-6 border-t border-gray-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <h3 className="text-base font-semibold text-gray-900">Professional Information</h3>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                      Real Estate License Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="licenseNumber"
+                      type="text"
+                      value={formData.licenseNumber}
+                      onChange={(e) => setFormData(prev => ({ ...prev, licenseNumber: e.target.value }))}
+                      placeholder="Enter your license number"
+                      className="input-field"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="brokerageName" className="block text-sm font-medium text-gray-700 mb-2">
+                      Brokerage Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="brokerageName"
+                      type="text"
+                      value={formData.brokerageName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, brokerageName: e.target.value }))}
+                      placeholder="Enter your brokerage name"
+                      className="input-field"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      placeholder="(555) 123-4567"
+                      className="input-field"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700 mb-2">
+                        Years of Experience
+                      </label>
+                      <select
+                        id="yearsOfExperience"
+                        value={formData.yearsOfExperience}
+                        onChange={(e) => setFormData(prev => ({ ...prev, yearsOfExperience: e.target.value }))}
+                        className="input-field"
+                      >
+                        <option value="">Select</option>
+                        <option value="0-2">0-2 years</option>
+                        <option value="3-5">3-5 years</option>
+                        <option value="6-10">6-10 years</option>
+                        <option value="10+">10+ years</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
+                        Specialization
+                      </label>
+                      <select
+                        id="specialization"
+                        value={formData.specialization}
+                        onChange={(e) => setFormData(prev => ({ ...prev, specialization: e.target.value }))}
+                        className="input-field"
+                      >
+                        <option value="">Select</option>
+                        <option value="residential">Residential</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="luxury">Luxury</option>
+                        <option value="investment">Investment</option>
+                        <option value="firsttime">First-time buyers</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <button
               type="submit"

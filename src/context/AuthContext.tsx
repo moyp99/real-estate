@@ -28,11 +28,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
     
+    // Mock credentials for regular users
     if (email === 'test@test.com' && password === 'password123') {
       setUser({
         email,
         name: 'Test User',
         type: 'user'
+      })
+      setIsLoading(false)
+      return true
+    }
+    
+    // Mock credentials for agents
+    const mockAgents = [
+      { email: 'agent@realestate.com', password: 'agent123', name: 'Sarah Johnson' },
+      { email: 'john.agent@estate.com', password: 'estate456', name: 'John Smith' },
+      { email: 'premium.agent@luxury.com', password: 'luxury789', name: 'Emily Davis' }
+    ]
+    
+    const agent = mockAgents.find(a => a.email === email && a.password === password)
+    if (agent) {
+      setUser({
+        email: agent.email,
+        name: agent.name,
+        type: 'agent'
       })
       setIsLoading(false)
       return true

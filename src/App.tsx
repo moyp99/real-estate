@@ -7,6 +7,7 @@ import MainView from './components/MainView'
 import PropertyDetails from './components/PropertyDetails'
 import FavoritesPage from './components/FavoritesPage'
 import MessagesPage from './components/MessagesPage'
+import AgentDashboard from './components/AgentDashboard'
 import { AuthProvider } from './context/AuthContext'
 import { FavoritesProvider } from './context/FavoritesContext'
 import { mockProperties } from './data/mockProperties'
@@ -36,6 +37,7 @@ function App() {
               <Route path="/property/:id" element={<PropertyDetailsWrapper />} />
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/agent-dashboard" element={<AgentDashboard />} />
             </Routes>
           </div>
         </Router>

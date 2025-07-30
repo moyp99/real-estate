@@ -15,7 +15,11 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/main')
+      if (user.type === 'agent') {
+        navigate('/agent-dashboard')
+      } else {
+        navigate('/main')
+      }
     }
   }, [user, navigate])
 
