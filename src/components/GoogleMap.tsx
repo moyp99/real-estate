@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Loader } from '@googlemaps/js-api-loader'
 import { Property } from '../types/Property'
-import '../types/global'
 
 interface GoogleMapProps {
   properties: Property[]
