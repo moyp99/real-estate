@@ -22,7 +22,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
       console.log('🚀 Starting map initialization...')
       
       const loader = new Loader({
-        apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
         version: 'weekly',
         libraries: ['places']
       })
@@ -56,11 +56,13 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
         }
       } catch (error) {
         console.error('❌ Error loading Google Maps:', error)
-        console.error('Error details:', {
-          message: error.message,
-          stack: error.stack,
-          name: error.name
-        })
+        if (error instanceof Error) {
+          console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+          })
+        }
       }
     }
 

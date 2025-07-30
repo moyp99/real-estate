@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { useNavigate, Link } from 'react-router-dom'
-import { mockProperties } from '../data/mockProperties'
+import { useNavigate } from 'react-router-dom'
 import FilterModal from './FilterModal'
 import { Property } from '../types/Property'
 import GoogleMap from './GoogleMap'
 import { useFavorites } from '../context/FavoritesContext'
+import { useProperties } from '../hooks/useProperties'
+import LoadingSpinner from './LoadingSpinner'
 
 interface FilterOptions {
   priceRange: {
@@ -28,12 +29,11 @@ interface FilterOptions {
 }
 
 const MainView: React.FC = () => {
-  const { user, logout } = useAuth()
+  const { } = useAuth()
   const { favorites } = useFavorites()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('Home')
   const [showFilterModal, setShowFilterModal] = useState(false)
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(mockProperties)
   const [activeFilters, setActiveFilters] = useState<FilterOptions>({
     priceRange: { min: 0, max: 2000000 },
     bedrooms: [],
@@ -44,14 +44,24 @@ const MainView: React.FC = () => {
     yearBuiltRange: { min: 1900, max: 2024 },
     features: []
   })
+  
+  const { properties, isLoading, error } = useProperties()
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([])
 
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
+  React.useEffect(() => {
+    if (properties.length > 0) {
+      applyFilters(activeFilters)
+    }
+  }, [properties])
+
+  // TODO: Add logout functionality when logout button is implemented
+  // const handleLogout = () => {
+  //   logout()
+  //   navigate('/')
+  // }
 
   const applyFilters = (filters: FilterOptions) => {
-    let filtered = mockProperties.filter(property => {
+    let filtered = properties.filter(property => {
       // Price range filter
       if (filters.priceRange.min > 0 && property.price < filters.priceRange.min) return false
       if (filters.priceRange.max > 0 && property.price > filters.priceRange.max) return false
@@ -118,6 +128,30 @@ const MainView: React.FC = () => {
       <span className="text-xs mt-1 font-medium">{name}</span>
     </button>
   )
+
+  if (isLoading) {
+    return (
+      <div className="h-screen bg-white flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
