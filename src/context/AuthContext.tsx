@@ -27,6 +27,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    // Check for guest session first
+    const guestSession = localStorage.getItem('guestSession')
+    if (guestSession) {
+      try {
+        const guest = JSON.parse(guestSession)
+        // Check if guest session is less than 24 hours old
+        if (guest.timestamp && Date.now() - guest.timestamp < 24 * 60 * 60 * 1000) {
+          setUser(guest)
+          setIsLoading(false)
+          return
+        } else {
+          // Clear expired guest session
+          localStorage.removeItem('guestSession')
+        }
+      } catch (e) {
+        console.error('Error parsing guest session:', e)
+        localStorage.removeItem('guestSession')
+      }
+    }
+    
     // Check if user is already logged in
     authService.getCurrentUser().then(async (supabaseUser) => {
       if (supabaseUser) {
@@ -40,6 +60,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           })
         }
       }
+      setIsLoading(false)
+    }).catch(() => {
       setIsLoading(false)
     })
 
@@ -111,18 +133,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const guestLogin = async (): Promise<boolean> => {
     setIsLoading(true)
     try {
-      // For guest login, we'll use anonymous sign in
-      const { data } = await supabase.auth.signInAnonymously()
-      if (data.user) {
-        setUser({
-          id: data.user.id,
-          email: 'guest@app.com',
-          name: 'Guest User',
-          type: 'guest'
-        })
-        return true
+      // Try Supabase anonymous sign in first
+      try {
+        const { data, error } = await supabase.auth.signInAnonymously()
+        if (!error && data.user) {
+          setUser({
+            id: data.user.id,
+            email: 'guest@estate-navigator.com',
+            name: 'Guest User',
+            type: 'guest'
+          })
+          return true
+        }
+      } catch (supabaseError) {
+        console.log('Supabase anonymous auth not available, using mock guest login')
       }
-      return false
+      
+      // Fallback to mock guest login if Supabase is not configured
+      const guestId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      setUser({
+        id: guestId,
+        email: 'guest@estate-navigator.com',
+        name: 'Guest User',
+        type: 'guest'
+      })
+      
+      // Store guest session in localStorage
+      localStorage.setItem('guestSession', JSON.stringify({
+        id: guestId,
+        email: 'guest@estate-navigator.com',
+        name: 'Guest User',
+        type: 'guest',
+        timestamp: Date.now()
+      }))
+      
+      return true
     } catch (error) {
       console.error('Guest login error:', error)
       return false
@@ -150,10 +195,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = async () => {
     try {
-      await authService.signOut()
+      // Clear guest session if exists
+      localStorage.removeItem('guestSession')
+      
+      // Only call signOut if not a guest user
+      if (user?.type !== 'guest' || user?.id?.startsWith('guest_') === false) {
+        await authService.signOut()
+      }
+      
       setUser(null)
     } catch (error) {
       console.error('Logout error:', error)
+      // Still clear the user even if signOut fails
+      setUser(null)
     }
   }
 

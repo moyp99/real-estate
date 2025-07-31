@@ -7,6 +7,7 @@ import GoogleMap from './GoogleMap'
 import { useFavorites } from '../context/FavoritesContext'
 import { useProperties } from '../hooks/useProperties'
 import LoadingSpinner from './LoadingSpinner'
+import GuestNotificationBanner from './GuestNotificationBanner'
 
 interface FilterOptions {
   priceRange: {
@@ -29,7 +30,7 @@ interface FilterOptions {
 }
 
 const MainView: React.FC = () => {
-  const { } = useAuth()
+  const { user } = useAuth()
   const { favorites } = useFavorites()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('Home')
@@ -187,6 +188,9 @@ const MainView: React.FC = () => {
         </div>
       </div>
 
+      {/* Guest Notification Banner */}
+      <GuestNotificationBanner />
+
       {/* Filter Modal */}
       <FilterModal
         isOpen={showFilterModal}
@@ -195,8 +199,8 @@ const MainView: React.FC = () => {
         currentFilters={activeFilters}
       />
 
-      {/* Content Area with Top Padding */}
-      <div className="flex-1 flex flex-col pt-20 pb-16 overflow-hidden">
+      {/* Content Area with Top Padding - adjusted for potential banner */}
+      <div className={`flex-1 flex flex-col pb-16 overflow-hidden ${user?.type === 'guest' ? 'pt-32' : 'pt-20'}`}>
         {/* Search Bar */}
         <div className="px-4 py-3 bg-white flex-shrink-0">
           <div className="flex space-x-2">

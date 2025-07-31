@@ -2,9 +2,12 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFavorites } from '../context/FavoritesContext'
 import { Property } from '../types/Property'
+import GuestNotificationBanner from './GuestNotificationBanner'
+import { useAuth } from '../context/AuthContext'
 
 const FavoritesPage: React.FC = () => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { favorites, removeFromFavorites } = useFavorites()
 
   const formatPrice = (price: number) => {
@@ -125,6 +128,9 @@ const FavoritesPage: React.FC = () => {
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+      {/* Guest Notification Banner */}
+      <GuestNotificationBanner />
+      
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 bg-white shadow-sm px-4 py-3 flex items-center justify-between z-40">
         <div className="flex items-center">
@@ -144,7 +150,7 @@ const FavoritesPage: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 pt-20 pb-16 overflow-y-auto">
+      <div className={`flex-1 pb-16 overflow-y-auto ${user?.type === 'guest' ? 'pt-32' : 'pt-20'}`}>
         {favorites.length === 0 ? (
           /* Empty State */
           <div className="flex flex-col items-center justify-center h-full px-4">
@@ -153,15 +159,19 @@ const FavoritesPage: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No favorites yet</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              {user?.type === 'guest' ? 'Sign up to save favorites' : 'No favorites yet'}
+            </h2>
             <p className="text-gray-600 text-center mb-6 max-w-sm">
-              Start exploring properties and tap the heart icon to save your favorites here.
+              {user?.type === 'guest' 
+                ? 'Create an account to save properties and access them anytime across all your devices.'
+                : 'Start exploring properties and tap the heart icon to save your favorites here.'}
             </p>
             <button
-              onClick={() => navigate('/main')}
+              onClick={() => navigate(user?.type === 'guest' ? '/signup' : '/main')}
               className="bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
             >
-              Explore Properties
+              {user?.type === 'guest' ? 'Sign Up Now' : 'Explore Properties'}
             </button>
           </div>
         ) : (

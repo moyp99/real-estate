@@ -5,6 +5,8 @@ import MortgageOfferModal from './MortgageOfferModal'
 import ScheduleTourModal from './ScheduleTourModal'
 import ContactAgentModal from './ContactAgentModal'
 import { useFavorites } from '../context/FavoritesContext'
+import GuestNotificationBanner from './GuestNotificationBanner'
+import { useAuth } from '../context/AuthContext'
 
 interface PropertyDetailsProps {
   property: Property
@@ -12,6 +14,7 @@ interface PropertyDetailsProps {
 
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { isFavorite, toggleFavorite } = useFavorites()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [showMortgageModal, setShowMortgageModal] = useState(false)
@@ -53,8 +56,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Guest Notification Banner */}
+      <GuestNotificationBanner />
+      
       {/* Image Gallery */}
-      <div className="relative h-80 bg-gray-200">
+      <div className={`relative h-80 bg-gray-200 ${user?.type === 'guest' ? 'mt-16' : ''}`}>
         <img
           src={property.images[currentImageIndex]}
           alt={property.title}
