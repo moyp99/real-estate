@@ -1,37 +1,102 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const GuestNotificationBanner: React.FC = () => {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
-  const [isDismissed, setIsDismissed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
-    // Check if banner was previously dismissed in this session
-    const dismissed = sessionStorage.getItem('guestBannerDismissed')
-    if (dismissed) {
-      setIsDismissed(true)
+    // Check if banner was previously collapsed in this session
+    const collapsed = sessionStorage.getItem('guestBannerCollapsed')
+    if (collapsed) {
+      setIsCollapsed(true)
     }
     
     // Show banner with a slight delay for smooth animation
-    if (user?.type === 'guest' && !dismissed) {
+    if (user?.type === 'guest') {
       const timer = setTimeout(() => setIsVisible(true), 500)
       return () => clearTimeout(timer)
     }
   }, [user])
 
-  const handleDismiss = () => {
-    setIsVisible(false)
-    setIsDismissed(true)
-    sessionStorage.setItem('guestBannerDismissed', 'true')
+  const handleCollapse = () => {
+    setIsCollapsed(true)
+    sessionStorage.setItem('guestBannerCollapsed', 'true')
   }
 
-  // Don't render if not a guest user or if dismissed
-  if (user?.type !== 'guest' || isDismissed) {
+  const handleExpand = () => {
+    setIsCollapsed(false)
+    sessionStorage.removeItem('guestBannerCollapsed')
+  }
+
+  const handleAuthAction = async (path: string) => {
+    // Clear guest session
+    await logout()
+    // Clear any session storage
+    sessionStorage.removeItem('guestBannerCollapsed')
+    // Navigate to the auth page
+    navigate(path)
+  }
+
+  // Don't render if not a guest user
+  if (user?.type !== 'guest') {
     return null
   }
 
+  // Collapsed state - minimal banner
+  if (isCollapsed) {
+    return (
+      <div
+        className={`fixed top-16 left-0 right-0 z-30 transition-all duration-500 ease-out ${
+          isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+        }`}
+      >
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 flex-1">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <p className="text-white text-sm">
+                  Guest mode • <span className="font-medium">Sign up to unlock all features</span>
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleAuthAction('/signup')}
+                  className="bg-white text-primary-700 px-3 py-1 rounded-md text-sm font-medium hover:bg-white/90 transition-colors"
+                >
+                  Sign Up
+                </button>
+                <button
+                  onClick={() => handleAuthAction('/')}
+                  className="text-white/90 hover:text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-white/20 transition-colors"
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={handleExpand}
+                  className="text-white/80 hover:text-white p-1 rounded-md hover:bg-white/20 transition-colors"
+                  aria-label="Expand notification"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Expanded state - full banner
   return (
     <div
       className={`fixed top-16 left-0 right-0 z-30 transition-all duration-500 ease-out ${
@@ -58,25 +123,25 @@ const GuestNotificationBanner: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-2">
-              <Link
-                to="/signup"
+              <button
+                onClick={() => handleAuthAction('/signup')}
                 className="bg-white text-primary-700 px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-white/90 transition-colors shadow-md"
               >
                 Sign Up
-              </Link>
-              <Link
-                to="/"
+              </button>
+              <button
+                onClick={() => handleAuthAction('/')}
                 className="bg-white/20 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-white/30 transition-colors"
               >
                 Log In
-              </Link>
+              </button>
               <button
-                onClick={handleDismiss}
+                onClick={handleCollapse}
                 className="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/20 transition-colors"
-                aria-label="Dismiss notification"
+                aria-label="Collapse notification"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                 </svg>
               </button>
             </div>
