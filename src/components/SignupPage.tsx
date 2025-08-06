@@ -3,13 +3,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import LoadingSpinner from './LoadingSpinner'
 
-const SignupPage: React.FC = () => {
+interface SignupPageProps {
+  isAgentSignup?: boolean
+}
+
+const SignupPage: React.FC<SignupPageProps> = ({ isAgentSignup = false }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    userType: 'user' as 'user' | 'agent',
+    userType: isAgentSignup ? 'agent' as 'user' | 'agent' : 'user' as 'user' | 'agent',
     // Agent-specific fields
     licenseNumber: '',
     brokerageName: '',
@@ -114,47 +118,53 @@ const SignupPage: React.FC = () => {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Estate Navigator</h1>
-            <p className="text-gray-600">Find your perfect home</p>
+            <p className="text-gray-600">
+              {isAgentSignup ? 'Join as a Real Estate Agent' : 'Find your perfect home'}
+            </p>
           </div>
 
           {/* Create Account */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Create Account</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              {isAgentSignup ? 'Create Agent Account' : 'Create Account'}
+            </h2>
           </div>
 
-          {/* User Type Selection */}
-          <div className="mb-6">
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, userType: 'user' }))}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  formData.userType === 'user'
-                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-600/25'
-                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                Home Buyer
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, userType: 'agent' }))}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  formData.userType === 'agent'
-                    ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-600/25'
-                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                Real Estate Agent
-              </button>
+          {/* User Type Selection - Only show if not agent signup */}
+          {!isAgentSignup && (
+            <div className="mb-6">
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, userType: 'user' }))}
+                  className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    formData.userType === 'user'
+                      ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-600/25'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  Home Buyer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, userType: 'agent' }))}
+                  className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    formData.userType === 'agent'
+                      ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg shadow-primary-600/25'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Real Estate Agent
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -335,7 +345,7 @@ const SignupPage: React.FC = () => {
               disabled={isLoading}
               className="btn-primary flex items-center justify-center"
             >
-              {isLoading ? <LoadingSpinner size="sm" /> : 'Create Account'}
+              {isLoading ? <LoadingSpinner size="sm" /> : (isAgentSignup ? 'Create Agent Account' : 'Create Account')}
             </button>
           </form>
 

@@ -14,7 +14,7 @@ export interface Database {
           id: string
           email: string
           name: string
-          user_type: 'user' | 'agent' | 'guest'
+          user_role: 'user' | 'agent' | 'guest'
           phone: string | null
           company: string | null
           photo_url: string | null
@@ -25,7 +25,7 @@ export interface Database {
           id: string
           email: string
           name: string
-          user_type?: 'user' | 'agent' | 'guest'
+          user_role?: 'user' | 'agent' | 'guest'
           phone?: string | null
           company?: string | null
           photo_url?: string | null
@@ -36,7 +36,7 @@ export interface Database {
           id?: string
           email?: string
           name?: string
-          user_type?: 'user' | 'agent' | 'guest'
+          user_role?: 'user' | 'agent' | 'guest'
           phone?: string | null
           company?: string | null
           photo_url?: string | null

@@ -11,7 +11,7 @@ export const authService = {
       options: {
         data: {
           name,
-          user_type: userType
+          user_role: userType
         }
       }
     })

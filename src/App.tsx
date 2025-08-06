@@ -54,6 +54,7 @@ function App() {
             <Routes>
               <Route path="/" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/agent-signup" element={<SignupPage isAgentSignup={true} />} />
               <Route path="/main" element={<MainView />} />
               <Route path="/property/:id" element={<PropertyDetailsWrapper />} />
               <Route path="/favorites" element={<FavoritesPage />} />

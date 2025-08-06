@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             id: supabaseUser.id,
             email: profile.email,
             name: profile.name,
-            type: profile.user_type
+            type: profile.user_role
           })
         }
       }
@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             id: supabaseUser.id,
             email: profile.email,
             name: profile.name,
-            type: profile.user_type
+            type: profile.user_role
           })
         }
       } else {
@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             id: supabaseUser.id,
             email: profile.email,
             name: profile.name,
-            type: profile.user_type
+            type: profile.user_role
           })
           return true
         }
