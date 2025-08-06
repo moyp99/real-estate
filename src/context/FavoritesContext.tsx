@@ -11,6 +11,8 @@ interface FavoritesContextType {
   isFavorite: (propertyId: number) => boolean
   toggleFavorite: (property: Property) => Promise<void>
   isLoading: boolean
+  showGuestPrompt: boolean
+  setShowGuestPrompt: (show: boolean) => void
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined)
@@ -19,6 +21,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [favorites, setFavorites] = useState<Property[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [showGuestPrompt, setShowGuestPrompt] = useState(false)
   const { user } = useAuth()
 
   useEffect(() => {
@@ -49,8 +52,8 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   }
 
   const addToFavorites = async (property: Property) => {
-    if (!user?.id) {
-      console.warn('User must be logged in to add favorites')
+    if (!user?.id || user?.type === 'guest') {
+      setShowGuestPrompt(true)
       return
     }
 
@@ -70,8 +73,8 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   }
 
   const removeFromFavorites = async (propertyId: number) => {
-    if (!user?.id) {
-      console.warn('User must be logged in to remove favorites')
+    if (!user?.id || user?.type === 'guest') {
+      setShowGuestPrompt(true)
       return
     }
 
@@ -104,7 +107,9 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
     removeFromFavorites,
     isFavorite,
     toggleFavorite,
-    isLoading
+    isLoading,
+    showGuestPrompt,
+    setShowGuestPrompt
   }
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>

@@ -234,5 +234,242 @@ export const mockProperties: Property[] = [
     mapPosition: { x: "70%", y: "70%" },
     daysOnMarket: 6,
     mlsNumber: "SD5678901"
+  },
+  {
+    id: 6,
+    title: "Luxury Estate in Carmel Valley",
+    price: 1450000,
+    priceFormatted: "$1.45M",
+    address: "12485 Carmel Country Road",
+    city: "San Diego",
+    state: "CA",
+    zipCode: "92130",
+    bedrooms: 5,
+    bathrooms: 4,
+    sqft: 3200,
+    lotSize: "0.4 acres",
+    yearBuilt: 2015,
+    propertyType: "Single Family",
+    status: "For Sale",
+    description: "Stunning luxury estate in exclusive Carmel Valley. Features include gourmet kitchen with premium appliances, wine cellar, home theater, and resort-style backyard with pool and spa. Top-rated schools nearby.",
+    features: [
+      "Gourmet Kitchen",
+      "Wine Cellar",
+      "Home Theater",
+      "Pool & Spa",
+      "3-Car Garage",
+      "High Ceilings",
+      "Premium Finishes",
+      "Mountain Views"
+    ],
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800"
+    ],
+    agent: {
+      name: "Robert Sterling",
+      phone: "(858) 555-0987",
+      email: "robert.sterling@luxurysd.com",
+      photo: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=100",
+      company: "Sterling Luxury Properties"
+    },
+    coordinates: { lat: 32.9342, lng: -117.2197 },
+    mapPosition: { x: "30%", y: "10%" },
+    daysOnMarket: 15,
+    mlsNumber: "SD6789012",
+    virtualTour: "https://example.com/virtual-tour-carmel",
+    schools: {
+      elementary: "Carmel Valley Elementary",
+      middle: "Carmel Valley Middle School",
+      high: "Torrey Pines High School"
+    }
+  },
+  {
+    id: 7,
+    title: "Hillcrest Victorian Restoration",
+    price: 825000,
+    priceFormatted: "$825K",
+    address: "1876 Front Street",
+    city: "San Diego",
+    state: "CA",
+    zipCode: "92103",
+    bedrooms: 4,
+    bathrooms: 3,
+    sqft: 2400,
+    lotSize: "0.18 acres",
+    yearBuilt: 1905,
+    propertyType: "Single Family",
+    status: "For Sale",
+    description: "Meticulously restored Victorian home in the heart of Hillcrest. Original architectural details preserved while adding modern conveniences. Walking distance to Balboa Park, restaurants, and shopping.",
+    features: [
+      "Historic Architecture",
+      "Original Moldings",
+      "Bay Windows",
+      "Updated Systems",
+      "Walk to Balboa Park",
+      "Hardwood Floors",
+      "Period Details",
+      "Modern Kitchen"
+    ],
+    images: [
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800"
+    ],
+    agent: {
+      name: "Patricia Kim",
+      phone: "(619) 555-0234",
+      email: "patricia.kim@historichomes.com",
+      photo: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=100",
+      company: "Historic Homes San Diego"
+    },
+    coordinates: { lat: 32.7457, lng: -117.1661 },
+    mapPosition: { x: "55%", y: "40%" },
+    daysOnMarket: 32,
+    mlsNumber: "SD7890123"
+  },
+  {
+    id: 8,
+    title: "Pacific Beach Surf Retreat",
+    price: 775000,
+    priceFormatted: "$775K",
+    address: "4521 Mission Boulevard",
+    city: "San Diego",
+    state: "CA",
+    zipCode: "92109",
+    bedrooms: 3,
+    bathrooms: 2,
+    sqft: 1750,
+    lotSize: "0.12 acres",
+    yearBuilt: 2019,
+    propertyType: "Single Family",
+    status: "For Sale",
+    description: "Modern beach house just two blocks from the ocean in vibrant Pacific Beach. Perfect for surf enthusiasts with outdoor shower, bike storage, and rooftop deck with ocean views. Walk to restaurants and nightlife.",
+    features: [
+      "Ocean Views",
+      "Rooftop Deck",
+      "Outdoor Shower",
+      "Bike Storage",
+      "Modern Design",
+      "Walk to Beach",
+      "Close to Nightlife",
+      "Parking Space"
+    ],
+    images: [
+      "https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800"
+    ],
+    agent: {
+      name: "Jake Morrison",
+      phone: "(858) 555-0567",
+      email: "jake.morrison@beachfront.com",
+      photo: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100",
+      company: "Beachfront Properties"
+    },
+    coordinates: { lat: 32.7941, lng: -117.2533 },
+    mapPosition: { x: "75%", y: "25%" },
+    daysOnMarket: 9,
+    mlsNumber: "SD8901234"
+  },
+  {
+    id: 9,
+    title: "Chula Vista Family Paradise",
+    price: 695000,
+    priceFormatted: "$695K",
+    address: "1205 Otay Lakes Road",
+    city: "Chula Vista",
+    state: "CA",
+    zipCode: "91913",
+    bedrooms: 4,
+    bathrooms: 3,
+    sqft: 2650,
+    lotSize: "0.28 acres",
+    yearBuilt: 2008,
+    propertyType: "Single Family",
+    status: "For Sale",
+    description: "Spacious family home in desirable Chula Vista neighborhood. Features include open floor plan, upgraded kitchen, master suite with walk-in closet, and large backyard perfect for kids and pets. Great schools and community amenities.",
+    features: [
+      "Open Floor Plan",
+      "Upgraded Kitchen",
+      "Master Suite",
+      "Large Backyard",
+      "Great Schools",
+      "Community Pool",
+      "Quiet Neighborhood",
+      "RV Parking"
+    ],
+    images: [
+      "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800"
+    ],
+    agent: {
+      name: "Maria Gonzalez",
+      phone: "(619) 555-0890",
+      email: "maria.gonzalez@familyfirst.com",
+      photo: "https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=100",
+      company: "Family First Realty"
+    },
+    coordinates: { lat: 32.6401, lng: -117.0842 },
+    mapPosition: { x: "85%", y: "80%" },
+    daysOnMarket: 21,
+    mlsNumber: "SD9012345",
+    schools: {
+      elementary: "Otay Elementary",
+      middle: "Rancho del Rey Middle School",
+      high: "Eastlake High School"
+    }
+  },
+  {
+    id: 10,
+    title: "Del Mar Heights Contemporary",
+    price: 1275000,
+    priceFormatted: "$1.28M",
+    address: "13755 Mira Mesa Boulevard",
+    city: "San Diego",
+    state: "CA",
+    zipCode: "92129",
+    bedrooms: 4,
+    bathrooms: 3,
+    sqft: 2850,
+    lotSize: "0.22 acres",
+    yearBuilt: 2017,
+    propertyType: "Single Family",
+    status: "For Sale",
+    description: "Contemporary home with stunning canyon and ocean views in prestigious Del Mar Heights. Features include chef's kitchen, great room with fireplace, master retreat, and private outdoor entertaining space.",
+    features: [
+      "Canyon Views",
+      "Ocean Views",
+      "Chef's Kitchen",
+      "Great Room",
+      "Master Retreat",
+      "Outdoor Kitchen",
+      "Solar Panels",
+      "Smart Home"
+    ],
+    images: [
+      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=800",
+      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800"
+    ],
+    agent: {
+      name: "Thomas Anderson",
+      phone: "(858) 555-0123",
+      email: "thomas.anderson@elitehomes.com",
+      photo: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=100",
+      company: "Elite Homes Realty"
+    },
+    coordinates: { lat: 32.9147, lng: -117.1413 },
+    mapPosition: { x: "40%", y: "15%" },
+    daysOnMarket: 11,
+    mlsNumber: "SD0123456",
+    virtualTour: "https://example.com/virtual-tour-delmar"
   }
 ]

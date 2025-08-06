@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Property } from '../types/Property'
+import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 interface ScheduleTourModalProps {
   property: Property
@@ -8,6 +10,8 @@ interface ScheduleTourModalProps {
 }
 
 const ScheduleTourModal: React.FC<ScheduleTourModalProps> = ({ property, isOpen, onClose }) => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,6 +23,7 @@ const ScheduleTourModal: React.FC<ScheduleTourModalProps> = ({ property, isOpen,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [showGuestPrompt, setShowGuestPrompt] = useState(false)
 
   if (!isOpen) return null
 
@@ -54,6 +59,13 @@ const ScheduleTourModal: React.FC<ScheduleTourModalProps> = ({ property, isOpen,
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Check if user is a guest
+    if (user?.type === 'guest') {
+      setShowGuestPrompt(true)
+      return
+    }
+    
     setIsSubmitting(true)
 
     // Simulate API call
@@ -78,6 +90,11 @@ const ScheduleTourModal: React.FC<ScheduleTourModalProps> = ({ property, isOpen,
     }, 3000)
   }
 
+  const handleGuestAction = (action: 'signup' | 'login') => {
+    onClose()
+    navigate(action === 'signup' ? '/signup' : '/')
+  }
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
@@ -98,6 +115,72 @@ const ScheduleTourModal: React.FC<ScheduleTourModalProps> = ({ property, isOpen,
           </p>
           <div className="text-sm text-gray-500">
             Closing automatically...
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Guest Prompt Modal
+  if (showGuestPrompt) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl max-w-md w-full p-6">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Sign Up to Schedule Tours</h3>
+            <p className="text-gray-600">
+              Create a free account to schedule property tours and connect with our real estate agents.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => handleGuestAction('signup')}
+              className="w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+            >
+              Sign Up for Free
+            </button>
+            <button
+              onClick={() => handleGuestAction('login')}
+              className="w-full bg-white text-primary-600 py-3 px-4 rounded-lg font-medium border border-primary-600 hover:bg-primary-50 transition-colors"
+            >
+              Already have an account? Log In
+            </button>
+            <button
+              onClick={() => setShowGuestPrompt(false)}
+              className="w-full text-gray-600 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            >
+              Continue Browsing
+            </button>
+          </div>
+
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 className="font-semibold text-gray-900 mb-2 text-sm">Benefits of Scheduling Tours</h4>
+            <ul className="space-y-1 text-sm text-gray-600">
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Choose in-person or virtual tour options
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Get instant confirmation from agents
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Receive calendar invites and reminders
+              </li>
+            </ul>
           </div>
         </div>
       </div>

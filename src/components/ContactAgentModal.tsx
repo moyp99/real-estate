@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Property } from '../types/Property'
+import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 interface ContactAgentModalProps {
   property: Property
@@ -8,6 +10,8 @@ interface ContactAgentModalProps {
 }
 
 const ContactAgentModal: React.FC<ContactAgentModalProps> = ({ property, isOpen, onClose }) => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const [selectedMethod, setSelectedMethod] = useState<'call' | 'email' | 'message'>('message')
   const [formData, setFormData] = useState({
     name: '',
@@ -18,11 +22,19 @@ const ContactAgentModal: React.FC<ContactAgentModalProps> = ({ property, isOpen,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [showGuestPrompt, setShowGuestPrompt] = useState(false)
 
   if (!isOpen) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Check if user is a guest
+    if (user?.type === 'guest') {
+      setShowGuestPrompt(true)
+      return
+    }
+    
     setIsSubmitting(true)
 
     // Simulate API call
@@ -43,6 +55,11 @@ const ContactAgentModal: React.FC<ContactAgentModalProps> = ({ property, isOpen,
         inquiryType: 'general'
       })
     }, 3000)
+  }
+
+  const handleGuestAction = (action: 'signup' | 'login') => {
+    onClose()
+    navigate(action === 'signup' ? '/signup' : '/')
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -74,6 +91,72 @@ const ContactAgentModal: React.FC<ContactAgentModalProps> = ({ property, isOpen,
           </p>
           <div className="text-sm text-gray-500">
             Closing automatically...
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Guest Prompt Modal
+  if (showGuestPrompt) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl max-w-md w-full p-6">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Sign Up to Contact Agents</h3>
+            <p className="text-gray-600">
+              Create a free account to message agents directly and get personalized assistance with your property search.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => handleGuestAction('signup')}
+              className="w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+            >
+              Sign Up for Free
+            </button>
+            <button
+              onClick={() => handleGuestAction('login')}
+              className="w-full bg-white text-primary-600 py-3 px-4 rounded-lg font-medium border border-primary-600 hover:bg-primary-50 transition-colors"
+            >
+              Already have an account? Log In
+            </button>
+            <button
+              onClick={() => setShowGuestPrompt(false)}
+              className="w-full text-gray-600 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            >
+              Continue Browsing
+            </button>
+          </div>
+
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 className="font-semibold text-gray-900 mb-2 text-sm">Why Sign Up?</h4>
+            <ul className="space-y-1 text-sm text-gray-600">
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Direct messaging with real estate agents
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Save and track your favorite properties
+              </li>
+              <li className="flex items-start">
+                <svg className="w-4 h-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Schedule property tours instantly
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -183,12 +266,21 @@ const ContactAgentModal: React.FC<ContactAgentModalProps> = ({ property, isOpen,
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Call {property.agent.name}</h4>
               <p className="text-gray-600 mb-4">Available Mon-Sat, 9 AM - 7 PM</p>
-              <a
-                href={`tel:${property.agent.phone}`}
-                className="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-              >
-                {property.agent.phone}
-              </a>
+              {user?.type === 'guest' ? (
+                <button
+                  onClick={() => setShowGuestPrompt(true)}
+                  className="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                >
+                  Sign Up to View Phone Number
+                </button>
+              ) : (
+                <a
+                  href={`tel:${property.agent.phone}`}
+                  className="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                >
+                  {property.agent.phone}
+                </a>
+              )}
             </div>
           )}
 
@@ -201,12 +293,21 @@ const ContactAgentModal: React.FC<ContactAgentModalProps> = ({ property, isOpen,
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Email {property.agent.name}</h4>
               <p className="text-gray-600 mb-4">Typically responds within 2 hours</p>
-              <a
-                href={`mailto:${property.agent.email}?subject=Inquiry about ${property.title}&body=Hi ${property.agent.name},%0D%0A%0D%0AI'm interested in learning more about the property at ${property.address}.%0D%0A%0D%0AProperty Details:%0D%0A- Price: ${formatPrice(property.price)}%0D%0A- Bedrooms: ${property.bedrooms}%0D%0A- Bathrooms: ${property.bathrooms}%0D%0A- Square Feet: ${property.sqft.toLocaleString()}%0D%0A%0D%0APlease let me know when would be a good time to discuss this property.%0D%0A%0D%0AThank you!`}
-                className="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-              >
-                {property.agent.email}
-              </a>
+              {user?.type === 'guest' ? (
+                <button
+                  onClick={() => setShowGuestPrompt(true)}
+                  className="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                >
+                  Sign Up to View Email
+                </button>
+              ) : (
+                <a
+                  href={`mailto:${property.agent.email}?subject=Inquiry about ${property.title}&body=Hi ${property.agent.name},%0D%0A%0D%0AI'm interested in learning more about the property at ${property.address}.%0D%0A%0D%0AProperty Details:%0D%0A- Price: ${formatPrice(property.price)}%0D%0A- Bedrooms: ${property.bedrooms}%0D%0A- Bathrooms: ${property.bathrooms}%0D%0A- Square Feet: ${property.sqft.toLocaleString()}%0D%0A%0D%0APlease let me know when would be a good time to discuss this property.%0D%0A%0D%0AThank you!`}
+                  className="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                >
+                  {property.agent.email}
+                </a>
+              )}
             </div>
           )}
 

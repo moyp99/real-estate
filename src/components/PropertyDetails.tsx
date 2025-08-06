@@ -7,6 +7,7 @@ import ContactAgentModal from './ContactAgentModal'
 import { useFavorites } from '../context/FavoritesContext'
 import GuestNotificationBanner from './GuestNotificationBanner'
 import { useAuth } from '../context/AuthContext'
+import GuestPromptModal from './GuestPromptModal'
 
 interface PropertyDetailsProps {
   property: Property
@@ -15,7 +16,7 @@ interface PropertyDetailsProps {
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { isFavorite, toggleFavorite } = useFavorites()
+  const { isFavorite, toggleFavorite, showGuestPrompt, setShowGuestPrompt } = useFavorites()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [showMortgageModal, setShowMortgageModal] = useState(false)
   const [showScheduleTourModal, setShowScheduleTourModal] = useState(false)
@@ -326,6 +327,20 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
         property={property}
         isOpen={showContactAgentModal}
         onClose={() => setShowContactAgentModal(false)}
+      />
+
+      {/* Guest Prompt Modal for Favorites */}
+      <GuestPromptModal
+        isOpen={showGuestPrompt}
+        onClose={() => setShowGuestPrompt(false)}
+        title="Sign Up to Save Favorites"
+        description="Create a free account to save your favorite properties and track them across devices."
+        benefits={[
+          'Save unlimited favorite properties',
+          'Get notified of price changes',
+          'Access favorites from any device',
+          'Share collections with family'
+        ]}
       />
     </div>
   )
