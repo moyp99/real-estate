@@ -9,6 +9,7 @@ import { useProperties } from '../hooks/useProperties'
 import LoadingSpinner from './LoadingSpinner'
 import GuestNotificationBanner from './GuestNotificationBanner'
 import AgentFloatingButton from './AgentFloatingButton'
+import { Bell, Home, Heart, MessageCircle, User, Search, Filter, MapPin, LogOut, Settings, ChevronDown } from 'lucide-react'
 
 interface FilterOptions {
   priceRange: {
@@ -31,11 +32,12 @@ interface FilterOptions {
 }
 
 const MainView: React.FC = () => {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const { favorites } = useFavorites()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('Home')
   const [showFilterModal, setShowFilterModal] = useState(false)
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false)
   const [activeFilters, setActiveFilters] = useState<FilterOptions>({
     priceRange: { min: 0, max: 2000000 },
     bedrooms: [],
@@ -56,11 +58,46 @@ const MainView: React.FC = () => {
     }
   }, [properties])
 
-  // TODO: Add logout functionality when logout button is implemented
-  // const handleLogout = () => {
-  //   logout()
-  //   navigate('/')
-  // }
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (showProfileDropdown && !target.closest('.profile-dropdown')) {
+        setShowProfileDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showProfileDropdown])
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+    setShowProfileDropdown(false)
+  }
+
+  const handleProfileClick = () => {
+    setShowProfileDropdown(!showProfileDropdown)
+  }
+
+  const handleDropdownItemClick = (action: string) => {
+    setShowProfileDropdown(false)
+    switch (action) {
+      case 'logout':
+        handleLogout()
+        break
+      case 'favorites':
+        navigate('/favorites')
+        break
+      case 'settings':
+        // TODO: Navigate to settings page when implemented
+        console.log('Settings page not implemented yet')
+        break
+    }
+  }
 
   const applyFilters = (filters: FilterOptions) => {
     let filtered = properties.filter(property => {
@@ -185,19 +222,61 @@ const MainView: React.FC = () => {
             </button>
           )}
           
-          <button className="p-2 rounded-full bg-gray-100 relative">
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-12h5v12z" />
-            </svg>
-            {/* Notification dot */}
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-          </button>
-          <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden">
-            <img 
-              src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&fit=crop" 
-              alt="Profile" 
-              className="w-full h-full object-cover"
-            />
+                     <button className="p-2 rounded-full bg-gray-100 relative">
+             <Bell className="w-5 h-5 text-gray-600" />
+             {/* Notification dot */}
+             <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+           </button>
+          <div className="relative profile-dropdown">
+            <button
+              onClick={handleProfileClick}
+              className="flex items-center space-x-1 p-1 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full bg-gray-300 overflow-hidden">
+                <img 
+                  src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=32&h=32&fit=crop" 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {/* Profile Dropdown */}
+            {showProfileDropdown && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <div className="px-4 py-2 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">{user?.name || 'User'}</p>
+                  <p className="text-xs text-gray-500">{user?.email}</p>
+                </div>
+                
+                <button
+                  onClick={() => handleDropdownItemClick('favorites')}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 text-gray-700"
+                >
+                  <Heart className="w-4 h-4" />
+                  <span className="text-sm">Favorites</span>
+                </button>
+                
+                <button
+                  onClick={() => handleDropdownItemClick('settings')}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 text-gray-700"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="text-sm">Settings</span>
+                </button>
+                
+                <div className="border-t border-gray-100 mt-1">
+                  <button
+                    onClick={() => handleDropdownItemClick('logout')}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 text-red-600"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="text-sm">Logout</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -222,11 +301,9 @@ const MainView: React.FC = () => {
         <div className="px-4 py-3 bg-white flex-shrink-0">
           <div className="flex space-x-2">
             <div className="flex-1 relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                 <Search className="h-5 w-5 text-gray-400" />
+               </div>
               <input
                 type="text"
                 placeholder="Search properties, neighborhoods..."
@@ -244,21 +321,17 @@ const MainView: React.FC = () => {
               {hasActiveFilters() && (
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
               )}
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
+                             <Filter className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Properties Count */}
         <div className="px-4 py-2 flex-shrink-0">
-          <div className="inline-flex items-center bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            {filteredProperties.length} properties
-          </div>
+                     <div className="inline-flex items-center bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+             <MapPin className="w-4 h-4 mr-1" />
+             {filteredProperties.length} properties
+           </div>
         </div>
 
         {/* Map Container */}
@@ -277,48 +350,40 @@ const MainView: React.FC = () => {
             name="Home"
             isActive={activeTab === 'Home'}
             onClick={() => setActiveTab('Home')}
-            icon={
-              <svg className="w-6 h-6" fill={activeTab === 'Home' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            }
+                         icon={
+               <Home className={`w-6 h-6 ${activeTab === 'Home' ? 'fill-current' : ''}`} />
+             }
           />
           <TabButton
             name="Favorites"
             isActive={activeTab === 'Favorites'}
             onClick={() => navigate('/favorites')}
-            icon={
-              <div className="relative">
-                <svg className="w-6 h-6" fill={activeTab === 'Favorites' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                {favorites.length > 0 && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-xs text-white font-bold">{favorites.length}</span>
-                  </div>
-                )}
-              </div>
-            }
+                         icon={
+               <div className="relative">
+                 <Heart className={`w-6 h-6 ${activeTab === 'Favorites' ? 'fill-current' : ''}`} />
+                 {favorites.length > 0 && (
+                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                     <span className="text-xs text-white font-bold">{favorites.length}</span>
+                   </div>
+                 )}
+               </div>
+             }
           />
           <TabButton
             name="Messages"
             isActive={activeTab === 'Messages'}
             onClick={() => navigate('/messages')}
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            }
+                         icon={
+               <MessageCircle className="w-6 h-6" />
+             }
           />
           <TabButton
             name="Profile"
             isActive={activeTab === 'Profile'}
             onClick={() => setActiveTab('Profile')}
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            }
+                         icon={
+               <User className="w-6 h-6" />
+             }
           />
         </div>
       </div>
