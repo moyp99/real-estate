@@ -1,20 +1,43 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Property } from '../types/Property'
 import PropertyForm from './PropertyForm'
-import { mockProperties } from '../data/mockProperties'
+import { propertyService } from '../services/property.service'
+import LoadingSpinner from './LoadingSpinner'
 
 const AgentDashboard: React.FC = () => {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [showPropertyForm, setShowPropertyForm] = useState(false)
   const [editingProperty, setEditingProperty] = useState<Property | null>(null)
-  const [agentProperties, setAgentProperties] = useState<Property[]>(
-    mockProperties.filter(p => p.agent.email === user?.email).slice(0, 5)
-  )
+  const [agentProperties, setAgentProperties] = useState<Property[]>([])
   const [showMenu, setShowMenu] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchAgentProperties()
+    }
+  }, [user])
+
+  const fetchAgentProperties = async () => {
+    if (!user?.id) return
+    
+    try {
+      setIsLoading(true)
+      setError(null)
+      const properties = await propertyService.getAgentProperties(user.id)
+      setAgentProperties(properties)
+    } catch (err) {
+      console.error('Error fetching properties:', err)
+      setError('Failed to load properties. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleAddProperty = () => {
     setEditingProperty(null)
@@ -27,36 +50,82 @@ const AgentDashboard: React.FC = () => {
   }
 
   const handleDeleteProperty = async (id: number) => {
+    if (!user?.id) return
+    
+    const confirmed = window.confirm('Are you sure you want to delete this property?')
+    if (!confirmed) return
+    
     setDeletingId(id)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    setAgentProperties(prev => prev.filter(p => p.id !== id))
-    setDeletingId(null)
+    try {
+      await propertyService.deleteAgentProperty(id, user.id)
+      setAgentProperties(prev => prev.filter(p => p.id !== id))
+    } catch (err) {
+      console.error('Error deleting property:', err)
+      alert('Failed to delete property. Please try again.')
+    } finally {
+      setDeletingId(null)
+    }
   }
 
-  const handleSaveProperty = (property: Property) => {
-    if (editingProperty) {
-      // Update existing property
-      setAgentProperties(prev => 
-        prev.map(p => p.id === property.id ? property : p)
-      )
-    } else {
-      // Add new property
-      const newProperty = {
-        ...property,
-        id: Math.max(...agentProperties.map(p => p.id)) + 1,
-        agent: {
-          name: user?.name || '',
-          email: user?.email || '',
-          phone: '(555) 123-4567',
-          photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=150&h=150',
-          company: 'Premier Real Estate'
-        }
+  const handleSaveProperty = async (property: Property) => {
+    if (!user?.id) return
+    
+    try {
+      if (editingProperty) {
+        // Update existing property
+        const updated = await propertyService.updateAgentProperty(
+          property.id,
+          user.id,
+          {
+            title: property.title,
+            price: property.price,
+            address: property.address,
+            city: property.city,
+            state: property.state,
+            zipCode: property.zipCode,
+            bedrooms: property.bedrooms,
+            bathrooms: property.bathrooms,
+            sqft: property.sqft,
+            yearBuilt: property.yearBuilt,
+            propertyType: property.propertyType,
+            status: property.status,
+            description: property.description,
+            features: property.features
+          }
+        )
+        setAgentProperties(prev => 
+          prev.map(p => p.id === property.id ? updated : p)
+        )
+      } else {
+        // Add new property
+        const created = await propertyService.createAgentProperty(
+          user.id,
+          {
+            title: property.title,
+            price: property.price,
+            address: property.address,
+            city: property.city,
+            state: property.state,
+            zipCode: property.zipCode,
+            bedrooms: property.bedrooms,
+            bathrooms: property.bathrooms,
+            sqft: property.sqft,
+            yearBuilt: property.yearBuilt,
+            propertyType: property.propertyType,
+            status: property.status,
+            description: property.description,
+            features: property.features
+          },
+          property.images || []
+        )
+        setAgentProperties(prev => [created, ...prev])
       }
-      setAgentProperties(prev => [newProperty, ...prev])
+      setShowPropertyForm(false)
+      setEditingProperty(null)
+    } catch (err) {
+      console.error('Error saving property:', err)
+      alert('Failed to save property. Please try again.')
     }
-    setShowPropertyForm(false)
-    setEditingProperty(null)
   }
 
   const handleLogout = () => {
@@ -138,9 +207,29 @@ const AgentDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Stats Cards */}
+      {/* Main Content */}
       <div className="px-4 py-6">
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <p className="text-sm">{error}</p>
+            <button
+              onClick={fetchAgentProperties}
+              className="text-sm font-medium text-red-800 hover:text-red-900 mt-1"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,6 +336,8 @@ const AgentDashboard: React.FC = () => {
             ))
           )}
         </div>
+          </>
+        )}
       </div>
 
       {/* Property Form Modal */}

@@ -1,9 +1,19 @@
 import { supabase } from '../lib/supabase'
 import { Database } from '../types/database.types'
 import { Property } from '../types/Property'
+import { mockPropertyService } from './mockPropertyService'
 
 type DbProperty = Database['public']['Tables']['properties']['Row']
 type PropertyImage = Database['public']['Tables']['property_images']['Row']
+
+// Check if Supabase is properly configured
+const isSupabaseConfigured = () => {
+  try {
+    return supabase && supabase.auth && true
+  } catch {
+    return false
+  }
+}
 
 export const propertyService = {
   async getProperties(filters?: {
@@ -130,6 +140,10 @@ export const propertyService = {
   },
 
   async getAgentProperties(agentId: string): Promise<Property[]> {
+    if (!isSupabaseConfigured()) {
+      return mockPropertyService.getAgentProperties(agentId)
+    }
+
     const { data, error } = await supabase
       .from('properties')
       .select(`
@@ -157,6 +171,153 @@ export const propertyService = {
 
     if (error) throw error
     return transformProperties(data || [])
+  },
+
+  async createAgentProperty(
+    agentId: string,
+    property: {
+      title: string
+      price: number
+      address: string
+      city: string
+      state: string
+      zipCode: string
+      bedrooms: number
+      bathrooms: number
+      sqft: number
+      yearBuilt: number
+      propertyType: string
+      status: string
+      description: string
+      features: string[]
+      latitude?: number
+      longitude?: number
+    },
+    images: string[]
+  ): Promise<Property> {
+    if (!isSupabaseConfigured()) {
+      return mockPropertyService.createAgentProperty(agentId, property, images)
+    }
+    const propertyData = {
+      agent_id: agentId,
+      title: property.title,
+      price: property.price,
+      address: property.address,
+      city: property.city,
+      state: property.state,
+      zip_code: property.zipCode,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      sqft: property.sqft,
+      year_built: property.yearBuilt,
+      property_type: property.propertyType,
+      status: property.status,
+      description: property.description,
+      features: property.features,
+      latitude: property.latitude || 0,
+      longitude: property.longitude || 0,
+      mls_number: `MLS${Date.now()}`,
+      days_on_market: 0
+    }
+
+    const { data: createdProperty, error: propertyError } = await supabase
+      .from('properties')
+      .insert(propertyData)
+      .select()
+      .single()
+
+    if (propertyError) throw propertyError
+
+    if (images.length > 0) {
+      const imageInserts = images.map((url, index) => ({
+        property_id: createdProperty.id,
+        url,
+        display_order: index,
+        is_primary: index === 0
+      }))
+
+      const { error: imagesError } = await supabase
+        .from('property_images')
+        .insert(imageInserts)
+
+      if (imagesError) throw imagesError
+    }
+
+    return this.getPropertyById(createdProperty.id) as Promise<Property>
+  },
+
+  async updateAgentProperty(
+    propertyId: number,
+    agentId: string,
+    updates: {
+      title?: string
+      price?: number
+      address?: string
+      city?: string
+      state?: string
+      zipCode?: string
+      bedrooms?: number
+      bathrooms?: number
+      sqft?: number
+      yearBuilt?: number
+      propertyType?: string
+      status?: string
+      description?: string
+      features?: string[]
+    }
+  ): Promise<Property> {
+    if (!isSupabaseConfigured()) {
+      return mockPropertyService.updateAgentProperty(propertyId, agentId, updates)
+    }
+    const updateData: any = {}
+    
+    if (updates.title) updateData.title = updates.title
+    if (updates.price) updateData.price = updates.price
+    if (updates.address) updateData.address = updates.address
+    if (updates.city) updateData.city = updates.city
+    if (updates.state) updateData.state = updates.state
+    if (updates.zipCode) updateData.zip_code = updates.zipCode
+    if (updates.bedrooms) updateData.bedrooms = updates.bedrooms
+    if (updates.bathrooms) updateData.bathrooms = updates.bathrooms
+    if (updates.sqft) updateData.sqft = updates.sqft
+    if (updates.yearBuilt) updateData.year_built = updates.yearBuilt
+    if (updates.propertyType) updateData.property_type = updates.propertyType
+    if (updates.status) updateData.status = updates.status
+    if (updates.description) updateData.description = updates.description
+    if (updates.features) updateData.features = updates.features
+
+    const { data, error } = await supabase
+      .from('properties')
+      .update(updateData)
+      .eq('id', propertyId)
+      .eq('agent_id', agentId)
+      .select()
+      .single()
+
+    if (error) throw error
+    
+    return this.getPropertyById(propertyId) as Promise<Property>
+  },
+
+  async deleteAgentProperty(propertyId: number, agentId: string): Promise<boolean> {
+    if (!isSupabaseConfigured()) {
+      return mockPropertyService.deleteAgentProperty(propertyId, agentId)
+    }
+    const { error: imagesError } = await supabase
+      .from('property_images')
+      .delete()
+      .eq('property_id', propertyId)
+
+    if (imagesError) throw imagesError
+
+    const { error } = await supabase
+      .from('properties')
+      .delete()
+      .eq('id', propertyId)
+      .eq('agent_id', agentId)
+
+    if (error) throw error
+    return true
   },
 
   async trackPropertyView(propertyId: number, userId?: string) {
