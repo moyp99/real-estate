@@ -8,6 +8,7 @@ import { useFavorites } from '../context/FavoritesContext'
 import { useProperties } from '../hooks/useProperties'
 import LoadingSpinner from './LoadingSpinner'
 import GuestNotificationBanner from './GuestNotificationBanner'
+import AgentFloatingButton from './AgentFloatingButton'
 
 interface FilterOptions {
   priceRange: {
@@ -171,6 +172,19 @@ const MainView: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-3">
+          {/* Agent Quick Access Button */}
+          {user?.type === 'agent' && (
+            <button
+              onClick={() => navigate('/agent-dashboard')}
+              className="p-2 rounded-full bg-primary-100 hover:bg-primary-200 transition-colors"
+              title="Agent Dashboard"
+            >
+              <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </button>
+          )}
+          
           <button className="p-2 rounded-full bg-gray-100 relative">
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-12h5v12z" />
@@ -190,6 +204,9 @@ const MainView: React.FC = () => {
 
       {/* Guest Notification Banner */}
       <GuestNotificationBanner />
+      
+      {/* Agent Floating Button */}
+      <AgentFloatingButton />
 
       {/* Filter Modal */}
       <FilterModal
