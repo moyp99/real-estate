@@ -23,7 +23,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSave, onClose }
     status: 'For Sale' as Property['status'],
     description: '',
     features: [] as string[],
-    imageUrl: ''
+    imageUrl: '',
+    latitude: '',
+    longitude: ''
   })
 
   const [currentStep, setCurrentStep] = useState(1)
@@ -46,7 +48,9 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSave, onClose }
         status: property.status,
         description: property.description,
         features: property.features,
-        imageUrl: property.images[0] || ''
+        imageUrl: property.images[0] || '',
+        latitude: property.coordinates?.lat?.toString() || '',
+        longitude: property.coordinates?.lng?.toString() || ''
       })
     }
   }, [property])
@@ -79,7 +83,10 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSave, onClose }
         photo: '',
         company: ''
       },
-      coordinates: property?.coordinates || { lat: 0, lng: 0 },
+      coordinates: {
+        lat: formData.latitude ? parseFloat(formData.latitude) : property?.coordinates?.lat || 0,
+        lng: formData.longitude ? parseFloat(formData.longitude) : property?.coordinates?.lng || 0
+      },
       mapPosition: property?.mapPosition || { x: '0', y: '0' },
       daysOnMarket: property?.daysOnMarket || 0,
       mlsNumber: property?.mlsNumber || `MLS${Date.now()}`
@@ -358,6 +365,36 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSave, onClose }
                     />
                   </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Latitude
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={formData.latitude}
+                      onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                      className="input-field"
+                      placeholder="40.7128"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Longitude
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={formData.longitude}
+                      onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                      className="input-field"
+                      placeholder="-74.0060"
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -422,6 +459,12 @@ const PropertyForm: React.FC<PropertyFormProps> = ({ property, onSave, onClose }
                     <span>{formData.bathrooms} baths</span>
                     <span>{formData.sqft} sqft</span>
                   </div>
+                  
+                  {(formData.latitude || formData.longitude) && (
+                    <div className="text-sm text-gray-600">
+                      <span className="font-medium text-gray-700">Coordinates:</span> {formData.latitude}, {formData.longitude}
+                    </div>
+                  )}
                   
                   <div className="text-sm">
                     <span className="font-medium text-gray-700">Type:</span> {formData.propertyType}

@@ -264,6 +264,8 @@ export const propertyService = {
       status?: string
       description?: string
       features?: string[]
+      latitude?: number
+      longitude?: number
     }
   ): Promise<Property> {
     if (!isSupabaseConfigured()) {
@@ -285,6 +287,8 @@ export const propertyService = {
     if (updates.status) updateData.status = updates.status
     if (updates.description) updateData.description = updates.description
     if (updates.features) updateData.features = updates.features
+    if (updates.latitude !== undefined) updateData.latitude = updates.latitude
+    if (updates.longitude !== undefined) updateData.longitude = updates.longitude
 
     const { data, error } = await supabase
       .from('properties')
