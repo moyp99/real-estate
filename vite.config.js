@@ -36,6 +36,6 @@ export default defineConfig(({ mode }) => {
       }
     })
   ],
-  base: 'https://moyp99.github.io/real-estate/',
+  base: process.env.NODE_ENV === 'production' ? '/real-estate/' : '/',
   }
 })
