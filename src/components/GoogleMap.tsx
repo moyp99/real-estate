@@ -147,7 +147,6 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
         // Add click listener
         markerDiv.addEventListener('click', (e) => {
           e.stopPropagation()
-          console.log(`🖱️ Marker clicked for property: ${property.title} (ID: ${property.id})`)
           onPropertyClick(property.id)
         })
 
@@ -158,12 +157,10 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
         return marker
       })
 
-      console.log(`✅ Created ${newMarkers.length} markers`)
       setMarkers(newMarkers)
 
       // Fit map to show all markers with proper bounds
       if (newMarkers.length > 0) {
-        console.log('🎯 Fitting map bounds to show all markers...')
         const bounds = new google.maps.LatLngBounds()
         properties.forEach(property => {
           bounds.extend(property.coordinates)
@@ -187,15 +184,12 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
           }
         })
       }
-    } else {
-      console.log('⏳ Waiting for map and properties...')
     }
   }, [map, properties, onPropertyClick])
 
   // Cleanup markers when component unmounts
   useEffect(() => {
     return () => {
-      console.log('🧹 Cleaning up markers on unmount')
       markers.forEach(marker => {
         if ((marker as any).overlay) {
           ;(marker as any).overlay.setMap(null)
@@ -204,8 +198,6 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
       })
     }
   }, [markers])
-
-  console.log('🎨 Rendering GoogleMap component')
   
   return (
     <div className="relative w-full h-full">
@@ -231,10 +223,8 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
         </button>
         <button 
           onClick={() => {
-            console.log('📍 Getting user location...')
             if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition((position) => {
-                console.log('📍 User location found:', position.coords)
                 const userLocation = {
                   lat: position.coords.latitude,
                   lng: position.coords.longitude

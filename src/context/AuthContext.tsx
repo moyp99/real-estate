@@ -146,7 +146,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return true
         }
       } catch (supabaseError) {
-        console.log('Supabase anonymous auth not available, using mock guest login')
+        console.error('An error ocurred while trying to sign in anonymously', supabaseError)
       }
       
       // Fallback to mock guest login if Supabase is not configured
