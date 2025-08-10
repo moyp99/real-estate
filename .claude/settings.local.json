@@ -6,7 +6,8 @@
       "Bash(npx tsc:*)",
       "Bash(rm:*)",
       "Bash(NODE_ENV=production npm run build)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": []
   }

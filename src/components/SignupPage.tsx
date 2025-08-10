@@ -360,8 +360,8 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAgentSignup = false }) => {
           <div className="space-y-3">
             <button
               onClick={() => handleSocialLogin('google')}
-              disabled={socialLoading === 'google'}
-              className="btn-secondary flex items-center justify-center"
+              disabled={true}
+              className="btn-secondary flex items-center justify-center relative opacity-60 cursor-not-allowed"
             >
               {socialLoading === 'google' ? (
                 <LoadingSpinner size="sm" />
@@ -376,12 +376,13 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAgentSignup = false }) => {
                   Continue with Google
                 </>
               )}
+              <span className="absolute top-0 right-2 bg-gray-600 text-white text-xs px-2 py-0.5 rounded-full">Coming Soon</span>
             </button>
 
             <button
               onClick={() => handleSocialLogin('apple')}
-              disabled={socialLoading === 'apple'}
-              className="btn-secondary flex items-center justify-center"
+              disabled={true}
+              className="btn-secondary flex items-center justify-center relative opacity-60 cursor-not-allowed"
             >
               {socialLoading === 'apple' ? (
                 <LoadingSpinner size="sm" />
@@ -393,6 +394,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAgentSignup = false }) => {
                   Continue with Apple
                 </>
               )}
+              <span className="absolute top-0 right-2 bg-gray-600 text-white text-xs px-2 py-0.5 rounded-full">Coming Soon</span>
             </button>
 
             <button
