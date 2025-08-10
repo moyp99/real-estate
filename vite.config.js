@@ -36,5 +36,6 @@ export default defineConfig(({ mode }) => {
       }
     })
   ],
+  base: 'https://moyp99.github.io/real-estate/',
   }
 })
