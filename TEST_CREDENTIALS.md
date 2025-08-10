@@ -9,16 +9,6 @@ These mock credentials can be used to test agent login functionality:
 - **Password**: agent123
 - **Type**: Real Estate Agent
 
-### Agent 2: John Smith
-- **Email**: john.agent@estate.com
-- **Password**: estate456
-- **Type**: Real Estate Agent
-
-### Agent 3: Emily Davis
-- **Email**: premium.agent@luxury.com
-- **Password**: luxury789
-- **Type**: Real Estate Agent
-
 ## Regular User Account
 
 ### Test User
