@@ -4,7 +4,9 @@
       "Bash(npm install:*)",
       "Bash(touch:*)",
       "Bash(npx tsc:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(NODE_ENV=production npm run build)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

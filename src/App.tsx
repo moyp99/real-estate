@@ -46,10 +46,12 @@ const PropertyDetailsWrapper: React.FC = () => {
 }
 
 function App() {
+  const basename = import.meta.env.MODE === 'production' ? '/real-estate' : '/'
+  
   return (
     <AuthProvider>
       <FavoritesProvider>
-        <Router>
+        <Router basename={basename}>
           <div className="min-h-screen bg-gray-100">
             <Routes>
               <Route path="/" element={<LoginPage />} />
