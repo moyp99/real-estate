@@ -16,7 +16,7 @@ interface AuthContextType {
   socialLogin: (provider: string) => Promise<boolean>
   guestLogin: () => Promise<boolean>
   signup: (email: string, password: string, name: string, type: 'user' | 'agent') => Promise<boolean>
-  logout: () => void
+  logout: () => Promise<void>
   isLoading: boolean
 }
 

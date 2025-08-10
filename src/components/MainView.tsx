@@ -73,10 +73,10 @@ const MainView: React.FC = () => {
     }
   }, [showProfileDropdown])
 
-  const handleLogout = () => {
-    logout()
-    navigate('/')
+  const handleLogout = async () => {
     setShowProfileDropdown(false)
+    await logout()
+    navigate('/')
   }
 
   const handleProfileClick = () => {
