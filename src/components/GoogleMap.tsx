@@ -13,13 +13,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
   const [markers, setMarkers] = useState<google.maps.Marker[]>([])
 
   useEffect(() => {
-    console.log('🗺️ GoogleMap component mounted')
-    console.log('📍 Properties received:', properties.length)
-    console.log('🔑 API Key exists:', !!import.meta.env.VITE_GOOGLE_MAPS_API_KEY)
-    console.log('🔑 API Key value:', import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'Present' : 'Missing')
-    
     const initMap = async () => {
-      console.log('🚀 Starting map initialization...')
       
       const loader = new Loader({
         apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
@@ -28,12 +22,9 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
       })
 
       try {
-        console.log('📦 Loading Google Maps API...')
         await loader.load()
-        console.log('✅ Google Maps API loaded successfully')
         
         if (mapRef.current) {
-          console.log('🎯 Map container found, creating map instance...')
           const mapInstance = new google.maps.Map(mapRef.current, {
             center: { lat: 32.7157, lng: -117.1611 }, // San Diego center
             zoom: 11,
@@ -49,10 +40,8 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
             fullscreenControl: false
           })
           
-          console.log('🗺️ Map instance created successfully')
           setMap(mapInstance)
         } else {
-          console.error('❌ Map container ref is null')
         }
       } catch (error) {
         console.error('❌ Error loading Google Maps:', error)
@@ -70,12 +59,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
   }, [])
 
   useEffect(() => {
-    console.log('🔄 Properties or map changed')
-    console.log('Map instance:', !!map)
-    console.log('Properties count:', properties.length)
-    
     if (map && properties.length > 0) {
-      console.log('🧹 Clearing existing markers...')
       // Clear existing markers
       markers.forEach(marker => {
         if ((marker as any).overlay) {
@@ -84,11 +68,7 @@ const GoogleMap: React.FC<GoogleMapProps> = ({ properties, onPropertyClick }) =>
         marker.setMap(null)
       })
       
-      console.log('📍 Creating new markers for properties...')
-      
       const newMarkers = properties.map(property => {
-        console.log(`Creating marker for property: ${property.title} at`, property.coordinates)
-        
         // Create custom marker with price using InfoWindow approach
         const marker = new google.maps.Marker({
           position: property.coordinates,
