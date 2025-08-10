@@ -90,7 +90,9 @@ const AgentDashboard: React.FC = () => {
             propertyType: property.propertyType,
             status: property.status,
             description: property.description,
-            features: property.features
+            features: property.features,
+            latitude: property.coordinates.lat,
+            longitude: property.coordinates.lng,
           }
         )
         setAgentProperties(prev => 
@@ -114,7 +116,9 @@ const AgentDashboard: React.FC = () => {
             propertyType: property.propertyType,
             status: property.status,
             description: property.description,
-            features: property.features
+            features: property.features,
+            latitude: property.coordinates.lat,
+            longitude: property.coordinates.lng
           },
           property.images || []
         )
